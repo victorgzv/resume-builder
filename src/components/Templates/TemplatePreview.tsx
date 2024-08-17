@@ -78,7 +78,7 @@ export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
   return (
     <ThemeProvider theme={lightTheme}>
       <Box sx={{ height: "100%", overflow: "auto" }}>
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h6" gutterBottom>
           Preview
         </Typography>
         <Paper

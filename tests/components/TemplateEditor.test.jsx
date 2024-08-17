@@ -8,7 +8,7 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { TemplateEditor } from "../../src/components/TemplatesPage/TemplateEditor";
+import { TemplateEditor } from "../../src/components/Templates/TemplateEditor";
 import { expect, vi, beforeEach, afterEach, describe, it } from "vitest";
 
 const mockTemplate = {

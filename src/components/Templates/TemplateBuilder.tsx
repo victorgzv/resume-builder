@@ -1,17 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Template } from "../../types/Template";
-import {
-  getTemplates,
-  createTemplate,
-  updateTemplate,
-} from "../../services/api";
 import { TemplateList } from "./TemplateList";
 import { TemplateEditor } from "./TemplateEditor";
 import { TemplatePreview } from "./TemplatePreview";
 
-const TemplatePageContainer = styled(Box)(({ theme }) => ({
+import useSaveTemplate from "../../customHooks/useSaveTemplate";
+import useDeleteTemplate from "../../customHooks/useDeleteTemplate";
+
+const TemplateBuilderContainer = styled(Box)(({ theme }) => ({
   display: "grid",
   gridTemplateColumns: "1fr",
   gridTemplateRows: "auto auto 1fr",
@@ -45,52 +43,56 @@ const EmptyStateContainer = styled(Box)({
   alignItems: "center",
 });
 
-export const TemplatesPage: React.FC = () => {
-  const [templates, setTemplates] = useState<Template[]>([]);
+type TemplateBuilderProps = {
+  baseUrl: string;
+  templatesState: any;
+  templatesRetry: () => void;
+  onAddTemplate: (template: Template) => void;
+  onUpdateTemplate: (template: Template) => void;
+  onDeleteTemplate: (templateId: string) => void;
+};
+
+export const TemplateBuilder: React.FC<TemplateBuilderProps> = ({
+  baseUrl,
+  templatesState,
+  onAddTemplate,
+  onUpdateTemplate,
+  templatesRetry,
+  onDeleteTemplate: handleDelete,
+}) => {
+  const { templates = [] } = templatesState.data || {};
+
   const [currentTemplate, setCurrentTemplate] =
     useState<Partial<Template> | null>(null);
 
-  useEffect(() => {
-    loadTemplates();
-  }, []);
-
-  const loadTemplates = async () => {
-    const loadedTemplates = await getTemplates();
-    setTemplates(loadedTemplates);
+  const handleCloseEditor = () => {
+    setCurrentTemplate(null);
   };
 
-  const handleCreateTemplate = async () => {
-    if (currentTemplate?.name) {
-      const newTemplate = await createTemplate({
-        name: currentTemplate.name,
-        description: currentTemplate.description,
-        fontFamily: currentTemplate.fontFamily || "Arial, sans-serif",
-        fontSize: currentTemplate.fontSize || "11",
-        color: currentTemplate.color || "#000000",
-      });
-
-      setTemplates([...templates, newTemplate]);
-      setCurrentTemplate(newTemplate);
-    }
-  };
-
-  const handleUpdateTemplate = async () => {
-    if (currentTemplate?.id) {
-      const updatedTemplate = await updateTemplate(currentTemplate as Template);
-      setTemplates(
-        templates.map((t) =>
-          t.id === updatedTemplate.id ? updatedTemplate : t
-        )
-      );
-      setCurrentTemplate(updatedTemplate);
-    }
-  };
+  const onSaveTemplate = useSaveTemplate({ baseUrl });
+  const onDeleteTemplate = useDeleteTemplate({
+    baseUrl,
+    onSuccess: handleDelete,
+    expandedTemplateId: currentTemplate?.id,
+    onCloseEditor: handleCloseEditor,
+  });
 
   const handleSaveTemplate = () => {
     if (currentTemplate?.id) {
-      handleUpdateTemplate();
+      onSaveTemplate(currentTemplate as Template, onUpdateTemplate);
     } else {
-      handleCreateTemplate();
+      const newTemplate = {
+        ...currentTemplate,
+        name: currentTemplate?.name,
+        description: currentTemplate?.description,
+        fontFamily: currentTemplate?.fontFamily || "Arial, sans-serif",
+        fontSize: currentTemplate?.fontSize || "11",
+        color: currentTemplate?.color || "#000000",
+        ...(currentTemplate?.watermark && { watermarkOpacity: 0.3 }),
+      };
+
+      onSaveTemplate(newTemplate as Template, onAddTemplate);
+      handleCloseEditor();
     }
   };
 
@@ -108,41 +110,25 @@ export const TemplatesPage: React.FC = () => {
     setCurrentTemplate({ ...template });
   };
 
-  const handleCloseEditor = () => {
-    setCurrentTemplate(null);
-  };
-
   const handleTemplateChange = (updatedTemplate: Partial<Template>) => {
     setCurrentTemplate((prev) => ({ ...prev, ...updatedTemplate }));
   };
 
   return (
-    <TemplatePageContainer>
+    <TemplateBuilderContainer>
       <SidebarContainer>
         <Typography variant="h6" sx={{ mb: 2 }}>
           Templates
         </Typography>
-        {templates.length > 0 ? (
-          <TemplateList
-            templates={templates}
-            onEditTemplate={handleEditTemplate}
-            selectedTemplateId={currentTemplate?.id}
-          />
-        ) : (
-          <Box sx={{ textAlign: "center" }}>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-              No templates available
-            </Typography>
-          </Box>
-        )}
-        <Button
-          variant="contained"
-          onClick={handleNewTemplate}
-          fullWidth
-          sx={{ mt: 2 }}
-        >
-          New Template
-        </Button>
+        <TemplateList
+          templates={templates}
+          templatesRetry={templatesRetry}
+          templatesState={templatesState.state}
+          onEditTemplate={handleEditTemplate}
+          onDeleteTemplate={onDeleteTemplate}
+          handleNewTemplate={handleNewTemplate}
+          selectedTemplateId={currentTemplate?.id}
+        />
       </SidebarContainer>
       {currentTemplate ? (
         <ContentContainer>
@@ -165,6 +151,6 @@ export const TemplatesPage: React.FC = () => {
           </Typography>
         </EmptyStateContainer>
       )}
-    </TemplatePageContainer>
+    </TemplateBuilderContainer>
   );
 };

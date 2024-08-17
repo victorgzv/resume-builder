@@ -28,7 +28,7 @@ interface TemplateEditorProps {
 }
 
 const ScrolleableContainer = styled(Box)({
-  padding: 16,
+  padding: 10,
   overflowY: "auto",
   maxHeight: "calc(100vh - 150px)",
 });
@@ -116,7 +116,7 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
 
   return (
     <Box>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h6" gutterBottom>
         {template?.id ? "Edit Template" : "Create New Template"}
       </Typography>
       <ScrolleableContainer>
@@ -270,13 +270,12 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
       </ScrolleableContainer>
       <Box
         sx={{
-          mt: 2,
           display: "flex",
           gap: 2,
         }}
       >
         <Button variant="contained" onClick={handleSave}>
-          {template?.id ? "Update Template" : "Save Template"}
+          {template?.id ? "Update" : "Add"}
         </Button>
         <Button variant="outlined" onClick={onCancel}>
           Cancel
