@@ -1,6 +1,6 @@
 # Resume Builder for Recruitment Agencies
 
-This project is a simple Resume Builder application developed for recruitment agencies to easily build templates that can be use to build a resume online. It allows users to create, customise, and manage resumes efficiently. The application is built using React, TypeScript, Vite, and MUI components.
+This project is a simple Resume Builder application developed for recruitment agencies to easily build templates that can be used to build a resume online. It allows users to create,customise,and manage resumes efficiently. The application is built using React, TypeScript, Vite, and MUI components.
 
 🚀 [Storybook branch published](https://resume-builder-storybook.netlify.app/?path=/story/components-resumemanagement--default&globals=theme:dark)
 
