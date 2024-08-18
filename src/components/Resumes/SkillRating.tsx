@@ -20,7 +20,7 @@ const SkillRating: React.FC<SkillRatingProps> = ({ skills, color }) => {
         <Grid item xs={12} sm={6} md={12} lg={6} key={index}>
           {skill.name && (
             <Box display="flex" alignItems="center">
-              <Typography variant="body2" sx={{ minWidth: 100 }}>
+              <Typography variant="body2" sx={{ minWidth: 100, mr: 2 }}>
                 {skill.name}
               </Typography>
               <Rating
@@ -31,8 +31,7 @@ const SkillRating: React.FC<SkillRatingProps> = ({ skills, color }) => {
                 icon={<CircleIcon fontSize="inherit" />}
                 emptyIcon={<CircleOutlinedIcon fontSize="inherit" />}
                 sx={{
-                  ml: -3,
-                  fontSize: "12px",
+                  fontSize: "10px",
                   color: color,
                 }}
               />

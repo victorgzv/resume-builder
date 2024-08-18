@@ -49,7 +49,6 @@ stateDiagram-v2
  PERSONAL_INFO --> EXPERIENCE: NEXT
  EXPERIENCE --> EDUCATION: NEXT
  EDUCATION --> SKILLS: NEXT
- SKILLS --> SUBMITTING: SUBMIT
  PERSONAL_INFO --> SELECT_TEMPLATE: PREVIOUS
  EXPERIENCE --> PERSONAL_INFO: PREVIOUS
  EDUCATION --> EXPERIENCE: PREVIOUS
@@ -74,7 +73,6 @@ stateDiagram-v2
 | EXPERIENCE      |
 | EDUCATION       |
 | SKILLS          |
-| SUBMITTING      |
 
 | Actions              |
 | -------------------- |
@@ -91,7 +89,6 @@ stateDiagram-v2
 | ADD_SKILL            |
 | UPDATE_SKILL         |
 | REMOVE_SKILL         |
-| SUBMIT               |
 
 | Internal data      | Notes                                                      |
 | ------------------ | ---------------------------------------------------------- |

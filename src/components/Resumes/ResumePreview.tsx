@@ -93,7 +93,8 @@ export const ResumePreview: React.FC<ResumePreviewProps> = React.memo(
             <Box
               ref={resumeRef}
               sx={{
-                height: "100vh",
+                minHeight: "500px",
+                height: "auto",
                 width: "100%",
                 position: "relative",
                 overflow: "hidden",
