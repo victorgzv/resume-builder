@@ -10,10 +10,8 @@ export interface Template {
   layout?: {
     showDividers: boolean;
     margins?: {
-      top: number;
-      right: number;
-      bottom: number;
-      left: number;
+      x: number;
+      y: number;
     };
     headerStyle?: "default" | "centered" | "leftAligned" | "rightAligned";
   };

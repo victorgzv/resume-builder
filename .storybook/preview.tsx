@@ -1,4 +1,3 @@
-// .storybook/preview.js or .storybook/preview.ts
 import React from "react";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import { lightTheme, darkTheme } from "../src/theme";

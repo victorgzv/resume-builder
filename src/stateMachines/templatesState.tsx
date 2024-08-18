@@ -7,7 +7,6 @@ import {
 
 import { Template } from "../types/Template";
 
-// Define the state types
 const STATE = {
   ERROR: "ERROR",
   IDLE: "IDLE",
@@ -15,7 +14,6 @@ const STATE = {
   LOADING: "LOADING",
 } as const;
 
-// Define the action types
 const ACTION = {
   ADD_TEMPLATE: "ADD_TEMPLATE",
   DELETE_TEMPLATE: "DELETE_TEMPLATE",
@@ -29,22 +27,20 @@ const ACTION = {
 export type StateType = typeof STATE;
 export type ActionType = typeof ACTION;
 
-// Define the state type for template management
-type TemplateFetchingStateType = {
+export type TemplateFetchingStateType = {
+  state?: string;
   data?: {
     templates: Template[];
   };
   error?: Error;
 };
 
-// Define the action type for template management
 type TemplateFetchingStateActionType = {
   error?: Error;
   template?: Template;
   templateId?: string;
 };
 
-// State transition functions
 const getLoadingStage: StateTransition<
   StateType,
   TemplateFetchingStateType,

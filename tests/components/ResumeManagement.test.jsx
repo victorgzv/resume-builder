@@ -71,7 +71,7 @@ describe("ResumeManagement", () => {
       expect(fetchMock.mock.calls[0][0]).toBe(`${baseUrl}/api/templates`);
     });
 
-    expect(screen.getByText("Resumes Management")).toBeInTheDocument();
+    expect(screen.getByText("Resume Management")).toBeInTheDocument();
     expect(screen.getByText("Template 1")).toBeInTheDocument();
     expect(screen.getByText("Template 2")).toBeInTheDocument();
   });
@@ -102,8 +102,6 @@ describe("ResumeManagement", () => {
       expect(fetchMock.mock.calls[0][0]).toBe(`${baseUrl}/api/templates`);
     });
 
-    expect(screen.getAllByTestId("template-list-item").length).toBe(2);
-
     userEvent.click(screen.getByText("New Template"));
 
     await waitFor(() => {
@@ -118,7 +116,19 @@ describe("ResumeManagement", () => {
 
     expect(nameInput).toHaveValue("Template 3");
 
-    userEvent.click(screen.getByText("Add"));
+    userEvent.click(screen.getByText("Next"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Show Dividers")).toBeInTheDocument();
+    });
+
+    userEvent.click(screen.getByText("Next"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Save")).toBeInTheDocument();
+    });
+
+    userEvent.click(screen.getByText("Save"));
 
     await waitFor(() => {
       expect(fetchMock.mock.calls.length).toBe(2);
@@ -143,7 +153,7 @@ describe("ResumeManagement", () => {
       expect(screen.getByText("Create New Template")).toBeInTheDocument();
     });
 
-    userEvent.click(screen.getByText("Add"));
+    userEvent.click(screen.getByText("Next"));
 
     await waitFor(() => {
       expect(screen.getByText("A name is required")).toBeInTheDocument();
@@ -174,7 +184,19 @@ describe("ResumeManagement", () => {
 
     expect(nameInput).toHaveValue("Template 1 Updated");
 
-    userEvent.click(screen.getByText("Update"));
+    userEvent.click(screen.getByText("Next"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Show Dividers")).toBeInTheDocument();
+    });
+
+    userEvent.click(screen.getByText("Next"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Save")).toBeInTheDocument();
+    });
+
+    userEvent.click(screen.getByText("Save"));
 
     await waitFor(() => {
       expect(fetchMock.mock.calls.length).toBe(2);

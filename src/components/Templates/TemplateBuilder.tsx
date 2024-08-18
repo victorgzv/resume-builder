@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import type { TemplateFetchingStateType } from "../../stateMachines/templatesState";
 import { Template } from "../../types/Template";
 import { TemplateList } from "./TemplateList";
 import { TemplateEditor } from "./TemplateEditor";
@@ -10,49 +11,80 @@ import useSaveTemplate from "../../customHooks/useSaveTemplate";
 import useDeleteTemplate from "../../customHooks/useDeleteTemplate";
 
 const TemplateBuilderContainer = styled(Box)(({ theme }) => ({
-  display: "grid",
-  gridTemplateColumns: "1fr",
-  gridTemplateRows: "auto auto 1fr",
-  gap: theme.spacing(2),
-  height: "100vh",
-  padding: theme.spacing(2),
+  display: "flex",
+  flexDirection: "column",
+  height: "90vh",
   [theme.breakpoints.up("md")]: {
-    gridTemplateColumns: "200px 1fr 1fr",
-    gridTemplateRows: "1fr",
-    padding: theme.spacing(3),
+    flexDirection: "row",
   },
 }));
 
 const SidebarContainer = styled(Box)(({ theme }) => ({
   borderBottom: `1px solid ${theme.palette.divider}`,
   paddingBottom: theme.spacing(2),
+  marginBottom: theme.spacing(2),
   [theme.breakpoints.up("md")]: {
+    width: "200px",
     borderRight: `1px solid ${theme.palette.divider}`,
     borderBottom: "none",
     paddingRight: theme.spacing(2),
+    marginRight: theme.spacing(2),
+    marginBottom: 0,
   },
 }));
 
-const ContentContainer = styled(Box)({
-  display: "contents",
-});
+const ContentContainer = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  flex: 1,
+  [theme.breakpoints.up("md")]: {
+    flexDirection: "row",
+  },
+}));
+
+const EditorContainer = styled(Box)(({ theme }) => ({
+  marginBottom: theme.spacing(2),
+  [theme.breakpoints.up("md")]: {
+    flex: 1,
+    marginRight: theme.spacing(2),
+    marginBottom: 0,
+  },
+}));
+
+const PreviewContainer = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  [theme.breakpoints.up("md")]: {
+    flex: 1,
+  },
+}));
+
+const ScrollablePreviewContainer = styled(Box)(({ theme }) => ({
+  flex: 1,
+  overflowY: "auto",
+  border: `1px solid ${theme.palette.divider}`,
+  borderRadius: theme.shape.borderRadius,
+  padding: theme.spacing(2),
+}));
 
 const EmptyStateContainer = styled(Box)({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
+  height: "100%",
+  width: "100%",
 });
 
 type TemplateBuilderProps = {
   baseUrl: string;
-  templatesState: any;
+  templatesState: TemplateFetchingStateType;
   templatesRetry: () => void;
   onAddTemplate: (template: Template) => void;
   onUpdateTemplate: (template: Template) => void;
   onDeleteTemplate: (templateId: string) => void;
 };
 
-export const TemplateBuilder: React.FC<TemplateBuilderProps> = ({
+const TemplateBuilder: React.FC<TemplateBuilderProps> = ({
   baseUrl,
   templatesState,
   onAddTemplate,
@@ -78,20 +110,28 @@ export const TemplateBuilder: React.FC<TemplateBuilderProps> = ({
   });
 
   const handleSaveTemplate = () => {
-    if (currentTemplate?.id) {
-      onSaveTemplate(currentTemplate as Template, onUpdateTemplate);
-    } else {
-      const newTemplate = {
-        ...currentTemplate,
-        name: currentTemplate?.name,
-        description: currentTemplate?.description,
-        fontFamily: currentTemplate?.fontFamily || "Arial, sans-serif",
-        fontSize: currentTemplate?.fontSize || "11",
-        color: currentTemplate?.color || "#000000",
-        ...(currentTemplate?.watermark && { watermarkOpacity: 0.3 }),
-      };
+    const updatedTemplate = {
+      ...currentTemplate,
+      name: currentTemplate?.name,
+      description: currentTemplate?.description,
+      fontFamily: currentTemplate?.fontFamily || "Arial, sans-serif",
+      fontSize: currentTemplate?.fontSize || "11",
+      color: currentTemplate?.color || "#000000",
+      layout: {
+        showDividers: true,
+        margins: {
+          x: 0,
+          y: 0,
+        },
+        headerStyle: "default",
+        ...currentTemplate?.layout,
+      },
+    };
 
-      onSaveTemplate(newTemplate as Template, onAddTemplate);
+    if (currentTemplate?.id) {
+      onSaveTemplate(updatedTemplate as Template, onUpdateTemplate);
+    } else {
+      onSaveTemplate(updatedTemplate as Template, onAddTemplate);
       handleCloseEditor();
     }
   };
@@ -130,27 +170,36 @@ export const TemplateBuilder: React.FC<TemplateBuilderProps> = ({
           selectedTemplateId={currentTemplate?.id}
         />
       </SidebarContainer>
-      {currentTemplate ? (
-        <ContentContainer>
-          <div>
-            <TemplateEditor
-              template={currentTemplate}
-              onTemplateChange={handleTemplateChange}
-              onSave={handleSaveTemplate}
-              onCancel={handleCloseEditor}
-            />
-          </div>
-          <Box>
-            <TemplatePreview template={currentTemplate} />
-          </Box>
-        </ContentContainer>
-      ) : (
-        <EmptyStateContainer>
-          <Typography variant="h6" color="text.secondary">
-            Select a template to edit or create a new one
-          </Typography>
-        </EmptyStateContainer>
-      )}
+      <ContentContainer>
+        {currentTemplate ? (
+          <>
+            <EditorContainer>
+              <TemplateEditor
+                template={currentTemplate}
+                onTemplateChange={handleTemplateChange}
+                onSave={handleSaveTemplate}
+                onCancel={handleCloseEditor}
+              />
+            </EditorContainer>
+            <PreviewContainer>
+              <Typography variant="h6" gutterBottom>
+                Preview
+              </Typography>
+              <ScrollablePreviewContainer>
+                <TemplatePreview template={currentTemplate} />
+              </ScrollablePreviewContainer>
+            </PreviewContainer>
+          </>
+        ) : (
+          <EmptyStateContainer>
+            <Typography variant="h6" color="text.secondary">
+              Select a template to edit or create a new one
+            </Typography>
+          </EmptyStateContainer>
+        )}
+      </ContentContainer>
     </TemplateBuilderContainer>
   );
 };
+
+export default TemplateBuilder;

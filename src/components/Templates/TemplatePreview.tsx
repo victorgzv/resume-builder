@@ -34,6 +34,12 @@ const PlaceholderText: React.FC<{ width: string }> = ({ width }) => (
   />
 );
 
+// Font size to size down the font for the preview
+const getRelativeFontSize = (fontSize: string) => {
+  const fontSizeNumber = parseInt(fontSize) - 2;
+  return fontSizeNumber.toString();
+};
+
 const StyledTypography = styled(Typography)<{
   templateFont: string;
   templateFontSize: string;
@@ -51,14 +57,14 @@ export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
   const dividerColor = template.color || "#000000";
   const templateFont = template.fontFamily || "Arial";
   const templateFontSize = template.fontSize
-    ? `${template.fontSize}px`
-    : "11px";
+    ? `${getRelativeFontSize(template.fontSize)}px`
+    : "14px";
+
+  console.log("template in TemplatePreview: ", template);
 
   const margins = template.layout?.margins || {
-    top: 20,
-    right: 20,
-    bottom: 20,
-    left: 20,
+    x: 0,
+    y: 0,
   };
   const headerStyle = template.layout?.headerStyle || "default";
 
@@ -78,9 +84,6 @@ export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
   return (
     <ThemeProvider theme={lightTheme}>
       <Box sx={{ height: "100%", overflow: "auto" }}>
-        <Typography variant="h6" gutterBottom>
-          Preview
-        </Typography>
         <Paper
           elevation={3}
           sx={{
@@ -97,11 +100,12 @@ export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
               alt="Watermark"
               sx={{
                 position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-                opacity: template.watermarkOpacity,
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: "50%",
+                height: "50%",
+                opacity: template?.watermarkOpacity || 0.3,
                 zIndex: 0,
               }}
             />
@@ -113,7 +117,7 @@ export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
               position: "relative",
               zIndex: 1,
               height: "100%",
-              padding: `${margins.top}px ${margins.right}px ${margins.bottom}px ${margins.left}px`,
+              padding: `${margins.y}px ${margins.x}px`,
             }}
           >
             <Box
@@ -149,15 +153,20 @@ export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
                 <PlaceholderText width="85%" />
               </Box>
             </Box>
-
+            <StyledTypography
+              variant="h6"
+              gutterBottom
+              templateFont={templateFont}
+              templateFontSize={templateFontSize}
+              templateColor={dividerColor}
+            >
+              About me
+            </StyledTypography>
+            {areDividersEnabled && (
+              <Divider sx={{ borderColor: dividerColor, borderWidth: "2px" }} />
+            )}
             <PlaceholderText width="100%" />
             <PlaceholderText width="90%" />
-            {areDividersEnabled && (
-              <Divider
-                sx={{ my: 2, borderColor: dividerColor, borderWidth: "2px" }}
-              />
-            )}
-
             <StyledTypography
               variant="h6"
               gutterBottom
@@ -167,14 +176,13 @@ export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
             >
               Work Experience
             </StyledTypography>
+            {areDividersEnabled && (
+              <Divider sx={{ borderColor: dividerColor, borderWidth: "2px" }} />
+            )}
+
             <PlaceholderText width="100%" />
             <PlaceholderText width="90%" />
             <PlaceholderText width="95%" />
-            {areDividersEnabled && (
-              <Divider
-                sx={{ my: 2, borderColor: dividerColor, borderWidth: "2px" }}
-              />
-            )}
 
             <StyledTypography
               variant="h6"
@@ -185,13 +193,12 @@ export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
             >
               Education
             </StyledTypography>
+            {areDividersEnabled && (
+              <Divider sx={{ borderColor: dividerColor, borderWidth: "2px" }} />
+            )}
             <PlaceholderText width="100%" />
             <PlaceholderText width="90%" />
-            {areDividersEnabled && (
-              <Divider
-                sx={{ my: 2, borderColor: dividerColor, borderWidth: "2px" }}
-              />
-            )}
+            <PlaceholderText width="95%" />
 
             <StyledTypography
               variant="h6"
@@ -203,9 +210,7 @@ export const TemplatePreview: React.FC<TemplatePreviewProps> = ({
               Skills
             </StyledTypography>
             {areDividersEnabled && (
-              <Divider
-                sx={{ my: 2, borderColor: dividerColor, borderWidth: "2px" }}
-              />
+              <Divider sx={{ borderColor: dividerColor, borderWidth: "2px" }} />
             )}
             <PlaceholderText width="95%" />
             <PlaceholderText width="100%" />

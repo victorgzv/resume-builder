@@ -20,7 +20,7 @@ const mockTemplate = {
   layout: {
     headerStyle: "default",
     showDividers: true,
-    margins: { top: 20, right: 20, bottom: 20, left: 20 },
+    margins: { x: 20, y: 20 },
   },
 };
 
@@ -83,13 +83,24 @@ describe("TemplateEditor", () => {
 
   it("handles watermark upload", async () => {
     mounter();
-    const file = new File(["dummy content"], "test.png", { type: "image/png" });
-    const uploadButton = screen.getByText("Upload");
-    const input = uploadButton.querySelector('input[type="file"]');
+
+    userEvent.click(screen.getByText("Next"));
 
     await waitFor(() => {
-      userEvent.upload(input, file);
+      expect(screen.getByText("Show Dividers")).toBeInTheDocument();
     });
+
+    userEvent.click(screen.getByText("Next"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Upload Image")).toBeInTheDocument();
+    });
+
+    const uploadButton = screen.getByText("Upload Image");
+    const file = new File(["dummy content"], "test.png", { type: "image/png" });
+    const input = uploadButton.querySelector('input[type="file"]');
+
+    userEvent.upload(input, file);
 
     await waitFor(() => {
       expect(mockOnTemplateChange).toHaveBeenCalled();
@@ -98,6 +109,18 @@ describe("TemplateEditor", () => {
 
   it("handles adjusting watermark opacity", async () => {
     mounter({ ...mockTemplate, watermark: "test.png" });
+
+    userEvent.click(screen.getByText("Next"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Show Dividers")).toBeInTheDocument();
+    });
+
+    userEvent.click(screen.getByText("Next"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Upload Image")).toBeInTheDocument();
+    });
 
     const opacitySlider = screen.getByTestId("opacity-slider");
     const sliderRect = opacitySlider.getBoundingClientRect();
@@ -119,6 +142,18 @@ describe("TemplateEditor", () => {
   it("handles removing watermark", async () => {
     mounter({ ...mockTemplate, watermark: "test.png" });
 
+    userEvent.click(screen.getByText("Next"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Show Dividers")).toBeInTheDocument();
+    });
+
+    userEvent.click(screen.getByText("Next"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Upload Image")).toBeInTheDocument();
+    });
+
     const removeButton = screen.getByText("Remove");
     await userEvent.click(removeButton);
 
@@ -127,38 +162,37 @@ describe("TemplateEditor", () => {
     });
   });
 
-  it("should expand layout settings when accordion is clicked", async () => {
+  it("should update layout settings when clicked", async () => {
     mounter();
 
-    const accordionSummary = screen.getByText("Layout Settings");
+    userEvent.click(screen.getByText("Next"));
 
-    await userEvent.click(accordionSummary);
-
-    const enableDividersCheckbox = screen.getByText("Show Dividers");
-    expect(enableDividersCheckbox).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Show Dividers")).toBeInTheDocument();
+    });
 
     // Toggle the dividers checkbox
-    await userEvent.click(enableDividersCheckbox);
+    await userEvent.click(screen.getByText("Show Dividers"));
 
     await waitFor(() => {
       expect(mockOnTemplateChange).toHaveBeenCalled();
     });
 
     // Adjust the top margin
-    const topMarginSlider = screen.getByTestId("top-margin-slider");
-    const sliderRect = topMarginSlider.getBoundingClientRect();
+    const horizontalMarginSlider = screen.getByTestId("x-margin-slider");
+    const sliderRect = horizontalMarginSlider.getBoundingClientRect();
     const targetX = sliderRect.left + sliderRect.width * 0.5;
     const targetY = sliderRect.top + sliderRect.height / 2;
 
-    fireEvent.mouseDown(topMarginSlider, {
+    fireEvent.mouseDown(horizontalMarginSlider, {
       clientX: sliderRect.left,
       clientY: targetY,
     });
-    fireEvent.mouseMove(topMarginSlider, {
+    fireEvent.mouseMove(horizontalMarginSlider, {
       clientX: targetX,
       clientY: targetY,
     });
-    fireEvent.mouseUp(topMarginSlider);
+    fireEvent.mouseUp(horizontalMarginSlider);
 
     await waitFor(() => {
       expect(mockOnTemplateChange).toHaveBeenCalled();
